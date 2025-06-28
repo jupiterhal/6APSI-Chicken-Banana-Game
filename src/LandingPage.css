@@ -1,0 +1,52 @@
+body {
+    background-color: #ffcd45;
+    font-family: 'Times New Roman';
+    font-style: italic;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+#landing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fffde7;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(121, 85, 72, 0.2);
+}
+  
+#landingpage {
+    text-align: center;
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    color: #795548;
+    margin-bottom: 12px;
+}
+  
+#greeting {
+    font-size: 18px;
+    color: #4e342e;
+    margin-bottom: 25px;
+}
+  
+#button {
+    display: block;
+    margin: auto;
+    padding: 12px 25px;
+    background-color: #fbc02d;
+    color: #4e342e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+  
+#button:hover {
+    background-color: #f9b800;
+}
+  

@@ -1,0 +1,75 @@
+body {
+    background-color: #ffcd45;
+    font-family: 'Times New Roman';
+    font-style: italic;
+}
+  
+#divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+#loginpage {
+    margin-top: 0%;
+    font-family:'Trebuchet MS';
+    font-style: italic;
+    color: #795548;
+    margin-bottom: 20px;
+}
+  
+#form {
+    background-color: #fffde7;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(121, 85, 72, 0.2);
+    width: 300px;
+}
+  
+#divider2, 
+#divider3 {
+    margin-bottom: 15px;
+    text-align: left;
+}
+  
+#username,
+#password {
+    display: block;
+    margin-bottom: 5px;
+    color: #795548;
+    font-weight: bold;
+}
+  
+#usernameinput,
+#passwordinput {
+    margin-left: 1rem;
+    width: 80%;
+    padding: 8px 10px;
+    border: 2px solid #ffe082;
+    border-radius: 10px;
+    background-color: #fffde7;
+}
+  
+#usernameinput:focus,
+#passwordinput:focus {
+    outline: none;
+    border-color: #ffca28;
+    box-shadow: 0 0 5px rgba(255, 202, 40, 0.5);
+}
+  
+#login {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    background-color: #ffca28;
+    color: #4e342e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+  
+#login:hover {
+    background-color: #fbc02d;
+}
+  
