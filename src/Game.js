@@ -5,112 +5,165 @@ const chickenUrl =
 const bananaUrl =
   "https://thumbs.dreamstime.com/b/bunch-bananas-6175887.jpg?w=768";
 
-function getRandomImage() {
-  return Math.random() < 0.5 ? bananaUrl : chickenUrl;
+function getRandomImage(chickensLeft, bananasLeft) {
+  const totalLeft = chickensLeft + bananasLeft;
+  const roll = Math.random() * totalLeft;
+  return roll < bananasLeft ? bananaUrl : chickenUrl;
 }
 
 function App() {
   const totalTiles = 36;
-  const [bananaCount, setBananaCount] = useState(18);
-
+  const [bananasLeft, setBananasLeft] = useState(18);
+  const [chickensLeft, setChickensLeft] = useState(18);
   const [tiles, setTiles] = useState(
     Array.from({ length: totalTiles }, () => ({
       revealed: false,
       image: null,
-      owner: null,
     }))
   );
 
-  const [currentPlayer, setCurrentPlayer] = useState(1);
-
   const handleClick = (index) => {
-    if (tiles[index].revealed) return;
+    if (tiles[index].revealed || bananasLeft + chickensLeft === 0) return;
 
-    const initial = getRandomImage();
-    const image = initial === bananaUrl && bananaCount > 0 ? bananaUrl : chickenUrl;
-
-    if (image === bananaUrl) {
-      setBananaCount(bananaCount - 1);
-    }
-
+    const image = getRandomImage(chickensLeft, bananasLeft);
     const newTiles = [...tiles];
     newTiles[index] = {
       revealed: true,
-      image: image,
-      owner: currentPlayer,
+      image,
     };
     setTiles(newTiles);
-    setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+
+    if (image === bananaUrl) {
+      setBananasLeft((prev) => prev - 1);
+    } else {
+      setChickensLeft((prev) => prev - 1);
+    }
   };
 
-  const getStats = (player, targetImage) => {
-    const claimed = tiles.filter((tile) => tile.owner === player);
-    const correct = claimed.filter((tile) => tile.image === targetImage);
-    const percentage =
-      claimed.length > 0 ? (correct.length / claimed.length) * 100 : 0;
-    return {
-      claimed: claimed.length,
-      correct: correct.length,
-      percentage: percentage.toFixed(1),
-    };
+  const handleReset = () => {
+    setBananasLeft(18);
+    setChickensLeft(18);
+    setTiles(
+      Array.from({ length: totalTiles }, () => ({
+        revealed: false,
+        image: null,
+      }))
+    );
   };
 
-  const p1Stats = getStats(1, chickenUrl);
-  const p2Stats = getStats(2, bananaUrl);
+  const tileStyle = {
+    width: "80px",
+    height: "80px",
+    padding: 0,
+    margin: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "20px",
+    fontWeight: "bold",
+    fontFamily: "'Courier New', Courier, monospace",
+    backgroundColor: "#ff0033",
+    color: "#ffff33",
+    border: "2px solid #880000",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "all 0.2s ease-in-out",
+  };
+
+  const imgStyle = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: "8px",
+  };
+
+  const revealedTiles = tiles.filter((tile) => tile.revealed);
+  const chickenRevealed = revealedTiles.filter((tile) => tile.image === chickenUrl).length;
+  const bananaRevealed = revealedTiles.filter((tile) => tile.image === bananaUrl).length;
+  const totalRevealed = revealedTiles.length;
+
+  const chickenPercent = totalRevealed ? ((chickenRevealed / totalRevealed) * 100).toFixed(1) : 0;
+  const bananaPercent = totalRevealed ? ((bananaRevealed / totalRevealed) * 100).toFixed(1) : 0;
+
+  const leader =
+    chickenRevealed > bananaRevealed
+      ? "🐔 Chickens are winning!"
+      : bananaRevealed > chickenRevealed
+      ? "🍌 Bananas are winning!"
+      : "🤝 It's a tie!";
 
   return (
-    <div>
-      <h1>Chicken Banana Game</h1>
-      <h2>Current Player: Player {currentPlayer}</h2>
+    <div style={{ textAlign: "center" }}>
+      <style>
+        {`
+          .tile-button:hover:not(:disabled) {
+            background-color: #ffff33 !important;
+            color: #ff0033 !important;
+          }
+        `}
+      </style>
 
-      <p>
-        Player 1 (Chicken) — {p1Stats.correct} correct out of {p1Stats.claimed}{" "}
-        = {p1Stats.percentage}%
-      </p>
-      <p>
-        Player 2 (Banana) — {p2Stats.correct} correct out of {p2Stats.claimed} ={" "}
-        {p2Stats.percentage}%
-      </p>
+      <h1>🐔 Chicken or 🍌 Banana?</h1>
+      <p>Click a tile to reveal what's underneath!</p>
 
-      <table>
-        <tbody>
-          {[...Array(6)].map((_, rowIndex) => (
-            <tr key={rowIndex}>
-              {[...Array(6)].map((_, colIndex) => {
-                const index = rowIndex * 6 + colIndex;
-                const tile = tiles[index];
-                return (
-                  <td key={colIndex}>
-                    <button onClick={() => handleClick(index)}>
-                      {tile.revealed ? (
-                        <img
-                          src={tile.image}
-                          alt="Result"
-                          width="80"
-                          height="80"
-                        />
-                      ) : (
-                        index + 1
-                      )}
-                    </button>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", gap: "40px" }}>
+        {/* Score Panel */}
+        <div style={{ textAlign: "left", fontFamily: "'Courier New', monospace", color: "#ffff33" }}>
+          <h3 style={{ marginBottom: "10px" }}>📊 Score</h3>
+          <p>🐔 Chickens: {chickenRevealed} ({chickenPercent}%)</p>
+          <p>🍌 Bananas: {bananaRevealed} ({bananaPercent}%)</p>
+          <p style={{ marginTop: "10px", fontWeight: "bold" }}>{leader}</p>
+        </div>
 
-      {tiles.every((tile) => tile.revealed) && (
-        <h2>
-          Game Over —{" "}
-          {p1Stats.percentage > p2Stats.percentage
-            ? "Player 1 Wins!"
-            : p1Stats.percentage < p2Stats.percentage
-            ? "Player 2 Wins!"
-            : "It's a Tie!"}
-        </h2>
-      )}
+        {/* Grid */}
+        <div style={{ display: "inline-block" }}>
+          <table style={{ borderCollapse: "collapse" }}>
+            <tbody>
+              {[...Array(6)].map((_, rowIndex) => (
+                <tr key={rowIndex}>
+                  {[...Array(6)].map((_, colIndex) => {
+                    const index = rowIndex * 6 + colIndex;
+                    const tile = tiles[index];
+                    return (
+                      <td key={colIndex} style={{ padding: "2px" }}>
+                        <button
+                          onClick={() => handleClick(index)}
+                          className="tile-button"
+                          style={tileStyle}
+                        >
+                          {tile.revealed ? (
+                            <img src={tile.image} alt="Result" style={imgStyle} />
+                          ) : (
+                            index + 1
+                          )}
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "20px" }}>
+        <button
+          onClick={handleReset}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            backgroundColor: "#222",
+            color: "#ffff33",
+            border: "2px solid #ff0033",
+            borderRadius: "8px",
+          }}
+        >
+          🔄 Reset
+        </button>
+      </div>
     </div>
   );
 }
