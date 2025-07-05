@@ -22,6 +22,10 @@ function App() {
     }))
   );
 
+  const [playerChoice, setPlayerChoice] = useState(null);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+
   const handleClick = (index) => {
     if (tiles[index].revealed || bananasLeft + chickensLeft === 0) return;
 
@@ -38,6 +42,10 @@ function App() {
     } else {
       setChickensLeft((prev) => prev - 1);
     }
+
+    if (bananasLeft + chickensLeft - 1 === 0) {
+      setGameOver(true);
+    }
   };
 
   const handleReset = () => {
@@ -49,6 +57,9 @@ function App() {
         image: null,
       }))
     );
+    setPlayerChoice(null);
+    setGameStarted(false);
+    setGameOver(false);
   };
 
   const tileStyle = {
@@ -92,6 +103,35 @@ function App() {
       ? "🍌 Bananas are winning!"
       : "🤝 It's a tie!";
 
+  // Character selection screen
+  if (!gameStarted) {
+    return (
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          fontFamily: "'Courier New', monospace",
+          color: "#000",
+          textAlign: "center",
+        }}
+      >
+        <h1>🐔 Chicken or 🍌 Banana?</h1>
+        <p>Choose your side to begin:</p>
+        <div style={{ display: "flex", gap: "20px", marginTop: "10px" }}>
+          <button onClick={() => { setPlayerChoice("chicken"); setGameStarted(true); }} style={tileStyle}>
+            🐔 Chicken
+          </button>
+          <button onClick={() => { setPlayerChoice("banana"); setGameStarted(true); }} style={tileStyle}>
+            🍌 Banana
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ textAlign: "center" }}>
       <style>
@@ -108,7 +148,7 @@ function App() {
 
       <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", gap: "40px" }}>
         {/* Score Panel */}
-        <div style={{ textAlign: "left", fontFamily: "'Courier New', monospace", color: "#ffff33" }}>
+        <div style={{ textAlign: "left", fontFamily: "'Courier New', monospace", color: "#000" }}>
           <h3 style={{ marginBottom: "10px" }}>📊 Score</h3>
           <p>🐔 Chickens: {chickenRevealed} ({chickenPercent}%)</p>
           <p>🍌 Bananas: {bananaRevealed} ({bananaPercent}%)</p>
@@ -147,6 +187,17 @@ function App() {
         </div>
       </div>
 
+      {/* Game Over Result */}
+      {gameOver && (
+        <div style={{ marginTop: "20px", fontSize: "20px", fontWeight: "bold", color: "#000" }}>
+          {chickenRevealed > bananaRevealed && playerChoice === "chicken" && "🎉 You win as the Chicken!"}
+          {bananaRevealed > chickenRevealed && playerChoice === "banana" && "🎉 You win as the Banana!"}
+          {chickenRevealed > bananaRevealed && playerChoice === "banana" && "😢 Chickens win. You lose."}
+          {bananaRevealed > chickenRevealed && playerChoice === "chicken" && "😢 Bananas win. You lose."}
+          {bananaRevealed === chickenRevealed && "🤝 It's a tie!"}
+        </div>
+      )}
+
       <div style={{ marginTop: "20px" }}>
         <button
           onClick={handleReset}
@@ -169,3 +220,4 @@ function App() {
 }
 
 export default App;
+
