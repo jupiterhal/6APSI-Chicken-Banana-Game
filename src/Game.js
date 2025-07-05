@@ -11,6 +11,7 @@ function getRandomImage() {
 
 function App() {
   const totalTiles = 36;
+  const [bananaCount, setBananaCount] = useState(18);
 
   const [tiles, setTiles] = useState(
     Array.from({ length: totalTiles }, () => ({
@@ -25,7 +26,13 @@ function App() {
   const handleClick = (index) => {
     if (tiles[index].revealed) return;
 
-    const image = getRandomImage();
+    const initial = getRandomImage();
+    const image = initial === bananaUrl && bananaCount > 0 ? bananaUrl : chickenUrl;
+
+    if (image === bananaUrl) {
+      setBananaCount(bananaCount - 1);
+    }
+
     const newTiles = [...tiles];
     newTiles[index] = {
       revealed: true,
